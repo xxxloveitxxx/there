@@ -1,0 +1,194 @@
+{# templates/partials/clients.html #}
+<div class="section clients-section">
+  <h1><span>Client</span> Management</h1>
+
+  <!-- Client Controls -->
+  <div class="client-controls">
+    <div class="search-bar">
+      <input type="text" placeholder="Search clients...">
+      <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="client-filters">
+      <div class="filter-btn active">All Clients</div>
+      <div class="filter-btn">Active</div>
+      <div class="filter-btn">Commercial</div>
+      <div class="filter-btn">Residential</div>
+    </div>
+  </div>
+
+  <!-- Client List -->
+  <div class="client-grid">
+    <div class="client-card">
+      <div class="client-header">
+        <div class="client-avatar">CB</div>
+        <div class="client-info">
+          <h3>CBRE Group</h3>
+          <div class="client-contact">
+            <span><i class="fas fa-envelope"></i> contact@cbre.com</span>
+            <span><i class="fas fa-phone"></i> (212) 555-1000</span>
+          </div>
+        </div>
+      </div>
+      <div class="client-stats">
+        <div class="stat-item">
+          <i class="fas fa-building"></i>
+          <span>45 Properties</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-file-contract"></i>
+          <span>12 Active Leases</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>$2.4M Annual Revenue</span>
+        </div>
+      </div>
+      <div class="client-actions">
+        <button class="btn btn-primary btn-sm">
+          <i class="fas fa-envelope"></i> Message
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-file-alt"></i> Documents
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-header">
+        <div class="client-avatar">JL</div>
+        <div class="client-info">
+          <h3>JLL</h3>
+          <div class="client-contact">
+            <span><i class="fas fa-envelope"></i> contact@jll.com</span>
+            <span><i class="fas fa-phone"></i> (212) 555-2000</span>
+          </div>
+        </div>
+      </div>
+      <div class="client-stats">
+        <div class="stat-item">
+          <i class="fas fa-building"></i>
+          <span>28 Properties</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-file-contract"></i>
+          <span>8 Active Leases</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>$1.8M Annual Revenue</span>
+        </div>
+      </div>
+      <div class="client-actions">
+        <button class="btn btn-primary btn-sm">
+          <i class="fas fa-envelope"></i> Message
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-file-alt"></i> Documents
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-header">
+        <div class="client-avatar">CW</div>
+        <div class="client-info">
+          <h3>Cushman & Wakefield</h3>
+          <div class="client-contact">
+            <span><i class="fas fa-envelope"></i> contact@cushwake.com</span>
+            <span><i class="fas fa-phone"></i> (212) 555-3000</span>
+          </div>
+        </div>
+      </div>
+      <div class="client-stats">
+        <div class="stat-item">
+          <i class="fas fa-building"></i>
+          <span>32 Properties</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-file-contract"></i>
+          <span>10 Active Leases</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>$2.1M Annual Revenue</span>
+        </div>
+      </div>
+      <div class="client-actions">
+        <button class="btn btn-primary btn-sm">
+          <i class="fas fa-envelope"></i> Message
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-file-alt"></i> Documents
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+      </div>
+    </div>
+
+    <div class="client-card">
+      <div class="client-header">
+        <div class="client-avatar">AM</div>
+        <div class="client-info">
+          <h3>Amazon Logistics</h3>
+          <div class="client-contact">
+            <span><i class="fas fa-envelope"></i> realestate@amazon.com</span>
+            <span><i class="fas fa-phone"></i> (206) 555-4000</span>
+          </div>
+        </div>
+      </div>
+      <div class="client-stats">
+        <div class="stat-item">
+          <i class="fas fa-building"></i>
+          <span>18 Properties</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-file-contract"></i>
+          <span>6 Active Leases</span>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>$3.2M Annual Revenue</span>
+        </div>
+      </div>
+      <div class="client-actions">
+        <button class="btn btn-primary btn-sm">
+          <i class="fas fa-envelope"></i> Message
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-file-alt"></i> Documents
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Filter button interactions
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      // Filter functionality would go here
+    });
+  });
+
+  // Search functionality
+  const searchInput = document.querySelector('.search-bar input');
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    document.querySelectorAll('.client-card').forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+    });
+  });
+</script>

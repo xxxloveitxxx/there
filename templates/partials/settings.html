@@ -1,0 +1,338 @@
+{# templates/partials/settings.html #}
+<div class="section settings-section">
+  <h1>Account <span>Settings</span></h1>
+
+  <!-- Profile Settings -->
+  <div class="settings-card">
+    <div class="section-header">
+      <h2><i class="fas fa-user"></i> Profile Information</h2>
+    </div>
+    <form class="settings-form" 
+          method="POST" 
+          action="/app/dashboard/settings?user_id={{ user_id }}"
+          hx-post="/app/dashboard/settings?user_id={{ user_id }}"
+          hx-target=".settings-section"
+          hx-swap="outerHTML">
+      <input type="hidden" name="section" value="profile">
+      <div class="form-group">
+        <label for="displayName">Display Name</label>
+        <input
+          type="text"
+          id="displayName"
+          name="display_name"
+          class="form-control"
+          value="{{ profile.display_name or '' | e }}"
+        >
+      </div>
+      <div class="form-group">
+        <label for="signature">Email Signature</label>
+        <textarea
+          id="signature"
+          name="signature"
+          class="form-control"
+          rows="4"
+        >{{ profile.signature or '' | e }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> Update Profile
+      </button>
+    </form>
+  </div>
+
+  <!-- Security Settings (Placeholder) -->
+  <div class="settings-card">
+    <div class="section-header">
+      <h2><i class="fas fa-lock"></i> Security <small>(Coming Soon)</small></h2>
+    </div>
+    <div class="placeholder-feature">
+      <div class="toggle-group">
+        <label class="toggle-label">
+          <span>Two-Factor Authentication</span>
+          <label class="toggle-switch">
+            <input type="checkbox" disabled>
+            <span class="slider"></span>
+          </label>
+        </label>
+        <p class="toggle-description">Add an extra layer of security to your account</p>
+      </div>
+      <div class="toggle-group">
+        <label class="toggle-label">
+          <span>Email Notifications</span>
+          <label class="toggle-switch">
+            <input type="checkbox" disabled>
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+      <div class="toggle-group">
+        <label class="toggle-label">
+          <span>SMS Alerts</span>
+          <label class="toggle-switch">
+            <input type="checkbox" disabled>
+            <span class="slider"></span>
+          </label>
+        </label>
+      </div>
+      <button class="btn btn-secondary" disabled>
+        <i class="fas fa-save"></i> Save Security Settings
+      </button>
+      <p class="placeholder-note">
+        <i class="fas fa-info-circle"></i> Security features are coming in a future update!
+      </p>
+    </div>
+  </div>
+
+  <!-- Integrations -->
+  <div class="settings-card">
+    <div class="section-header">
+      <h2><i class="fas fa-plug"></i> Integrations</h2>
+    </div>
+    <div class="integration-grid">
+      <!-- Gmail OAuth Integration -->
+      <div class="integration-card">
+        <div class="integration-icon">
+          <i class="fab fa-google"></i>
+        </div>
+        <div class="integration-details">
+          <h4>Gmail (OAuth)</h4>
+          <div class="integration-status {{ 'status-connected' if gmail_connected and not show_reconnect else 'status-expired' if gmail_connected and show_reconnect else '' }}">
+            <i class="fas {{ 'fa-check-circle' if gmail_connected and not show_reconnect else 'fa-exclamation-triangle' if gmail_connected and show_reconnect else 'fa-times-circle' }}"></i>
+            {{ 'Connected' if gmail_connected and not show_reconnect else 'Expired' if gmail_connected and show_reconnect else 'Not Connected' }}
+          </div>
+        </div>
+        <div class="integration-actions">
+          {% if gmail_connected %}
+            <form method="POST" 
+                  action="/app/disconnect_gmail" 
+                  style="display:inline"
+                  hx-post="/app/disconnect_gmail"
+                  hx-target=".settings-section"
+                  hx-swap="outerHTML">
+              <input type="hidden" name="user_id" value="{{ user_id }}">
+              <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fas fa-unlink"></i> Disconnect
+              </button>
+            </form>
+            {% if show_reconnect %}
+<a href="/app/reconnect_gmail?user_id={{ user_id }}" 
+   class="btn btn-primary btn-sm">
+  <i class="fas fa-sync-alt"></i> Reconnect
+</a>
+{% endif %}
+          {% else %}
+            <a href="/app/reconnect_gmail?user_id={{ user_id }}"
+      class="btn btn-primary btn-sm">
+    <i class="fas fa-link"></i> Connect
+</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- SMTP/IMAP Integration -->
+      <div class="integration-card">
+        <div class="integration-icon">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <div class="integration-details">
+          <h4>SMTP/IMAP</h4>
+          <div class="integration-status {{ 'status-connected' if profile.smtp_email else '' }}">
+            <i class="fas {{ 'fa-check-circle' if profile.smtp_email else 'fa-times-circle' }}"></i>
+            {{ 'Connected' if profile.smtp_email else 'Not Connected' }}
+          </div>
+        </div>
+        <div class="integration-actions">
+          {% if profile.smtp_email %}
+            <form method="POST" 
+                  action="/app/disconnect_smtp" 
+                  style="display:inline"
+                  hx-post="/app/disconnect_smtp"
+                  hx-target=".settings-section"
+                  hx-swap="outerHTML">
+              <input type="hidden" name="user_id" value="{{ user_id }}">
+              <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fas fa-unlink"></i> Disconnect
+              </button>
+            </form>
+          {% else %}
+            <button class="btn btn-primary btn-sm"
+                    hx-get="/app/connect_smtp_form?user_id={{ user_id }}"
+                    hx-target="body"
+                    hx-swap="beforeend">
+              <i class="fas fa-link"></i> Connect
+            </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Other integrations placeholders -->
+      <div class="integration-card">
+        <div class="integration-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="integration-details">
+          <h4>Google Calendar</h4>
+          <div class="integration-status status-not-connected">
+            <i class="fas fa-times-circle"></i> Not Connected
+          </div>
+        </div>
+        <div class="integration-actions">
+          <button class="btn btn-secondary btn-sm" disabled>
+            <i class="fas fa-link"></i> Connect
+          </button>
+        </div>
+      </div>
+
+      <div class="integration-card">
+        <div class="integration-icon">
+          <i class="fas fa-database"></i>
+        </div>
+        <div class="integration-details">
+          <h4>CRM Integration</h4>
+          <div class="integration-status status-not-connected">
+            <i class="fas fa-times-circle"></i> Not Connected
+          </div>
+        </div>
+        <div class="integration-actions">
+          <button class="btn btn-secondary btn-sm" disabled>
+            <i class="fas fa-link"></i> Connect
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Danger Zone -->
+  <div class="settings-card danger-zone">
+    <div class="section-header">
+      <h2><i class="fas fa-exclamation-triangle"></i> Danger Zone</h2>
+    </div>
+    <div class="danger-content">
+      <p>These actions are irreversible. Please proceed with caution.</p>
+      <div class="danger-actions">
+        <button class="btn btn-danger" disabled>
+          <i class="fas fa-file-export"></i> Export All Data
+        </button>
+        <button class="btn btn-danger" disabled>
+          <i class="fas fa-trash-alt"></i> Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Placeholder feature styles */
+  .placeholder-feature {
+    opacity: 0.7;
+    position: relative;
+  }
+
+  .placeholder-feature:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    cursor: not-allowed;
+  }
+
+  .placeholder-note {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(100, 255, 218, 0.1);
+    border-left: 3px solid #64ffda;
+    color: #64ffda;
+    font-size: 0.9rem;
+  }
+
+  .placeholder-note i {
+    margin-right: 5px;
+  }
+
+  /* Toggle switch styles */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background: #64ffda;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  input:disabled + .slider {
+    background-color: #555;
+    cursor: not-allowed;
+  }
+
+  input:disabled + .slider:before {
+    background-color: #aaa;
+  }
+
+  /* Status styles */
+  .status-expired {
+    color: #ff9800;
+  }
+  
+  .status-expired i {
+    color: #ff9800;
+  }
+</style>
+
+<script>
+  // Toggle switch interactions
+  document.querySelectorAll('.toggle-switch input:not(:disabled)').forEach(switchEl => {
+    switchEl.addEventListener('change', function() {
+      const label = this.closest('.toggle-label');
+      label.querySelector('span').textContent = this.checked ? 'Enabled' : 'Disabled';
+    });
+  });
+
+  // Confirm dangerous actions
+  document.querySelectorAll('.danger-zone .btn:not(:disabled)').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const action = this.textContent.trim();
+      if (confirm(`Are you sure you want to ${action}? This cannot be undone.`)) {
+        alert(`Action "${action}" confirmed.`);
+      }
+    });
+  });
+</script>

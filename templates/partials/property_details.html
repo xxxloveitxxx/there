@@ -1,0 +1,396 @@
+<!-- partials/property_details.html -->
+<style>
+    .property-details-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s;
+    }
+
+    .property-details-content {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        max-width: 900px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .property-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .property-title-section h2 {
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .property-meta {
+        display: flex;
+        gap: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        flex-wrap: wrap;
+    }
+
+    .property-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-badge.available {
+        background: rgba(100, 255, 218, 0.2);
+        color: var(--accent-color);
+    }
+
+    .status-badge.pending {
+        background: rgba(248, 150, 30, 0.2);
+        color: #f8961e;
+    }
+
+    .status-badge.rented {
+        background: rgba(136, 146, 176, 0.2);
+        color: var(--text-secondary);
+    }
+
+    .property-body {
+        padding: 1.5rem;
+    }
+
+    .property-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .property-stat {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .property-stat-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .property-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .property-section {
+        margin-bottom: 2rem;
+    }
+
+    .property-section h3 {
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .property-section h3 i {
+        color: var(--accent-color);
+    }
+
+    .description-text {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+
+    .amenities-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .amenity-tag {
+        padding: 0.5rem 1rem;
+        background: rgba(100, 255, 218, 0.1);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+    }
+
+    .activity-item {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .activity-info {
+        flex: 1;
+    }
+
+    .activity-title {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .activity-meta {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .property-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .btn-danger {
+        background: transparent;
+        color: #f85149;
+        border: 1px solid #f85149;
+    }
+
+    .btn-danger:hover {
+        background: rgba(248, 81, 73, 0.1);
+    }
+</style>
+
+<div class="property-details-modal" onclick="if(event.target === this) this.remove()">
+    <div class="property-details-content">
+        <div class="property-header">
+            <div class="property-title-section">
+                <h2>{{ property.address }}</h2>
+                <div class="property-meta">
+                    <span>
+                        <i class="fas fa-home"></i>
+                        {{ property.property_type|title }}
+                    </span>
+                    <span>
+                        <i class="fas fa-calendar"></i>
+                        Listed {{ property.created_at[:10] }}
+                    </span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <span class="status-badge {{ property.availability_status }}">
+                    {{ property.availability_status }}
+                </span>
+                <button class="close-btn" onclick="this.closest('.property-details-modal').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="property-body">
+            <!-- Property Stats -->
+            <div class="property-grid">
+                <div class="property-stat">
+                    <div class="property-stat-label">
+                        <i class="fas fa-bed"></i> Bedrooms
+                    </div>
+                    <div class="property-stat-value">{{ property.bedrooms or 'N/A' }}</div>
+                </div>
+                <div class="property-stat">
+                    <div class="property-stat-label">
+                        <i class="fas fa-bath"></i> Bathrooms
+                    </div>
+                    <div class="property-stat-value">{{ property.bathrooms or 'N/A' }}</div>
+                </div>
+                <div class="property-stat">
+                    <div class="property-stat-label">
+                        <i class="fas fa-ruler-combined"></i> Square Feet
+                    </div>
+                    <div class="property-stat-value">{{ property.square_feet or 'N/A' }}</div>
+                </div>
+                <div class="property-stat">
+                    <div class="property-stat-label">
+                        <i class="fas fa-dollar-sign"></i> Price/Month
+                    </div>
+                    <div class="property-stat-value">${{ property.price|int if property.price else 'N/A' }}</div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            {% if property.description %}
+            <div class="property-section">
+                <h3><i class="fas fa-align-left"></i> Description</h3>
+                <p class="description-text">{{ property.description }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Amenities -->
+            {% if property.amenities %}
+            <div class="property-section">
+                <h3><i class="fas fa-star"></i> Amenities</h3>
+                <div class="amenities-list">
+                    {% for amenity in property.amenities.split(',') %}
+                        <span class="amenity-tag">{{ amenity.strip() }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="property-section">
+                <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                
+                {% if appointments and appointments|length > 0 %}
+                    <h4 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem;">Appointments</h4>
+                    {% for apt in appointments[:5] %}
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <div class="activity-title">
+                                <i class="fas fa-calendar-check"></i>
+                                Appointment with {{ apt.client_email }}
+                            </div>
+                            <div class="activity-meta">
+                                {{ apt.appointment_time[:10] }} at {{ apt.appointment_time[11:16] }}
+                                - {{ apt.status|title }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if conversations and conversations|length > 0 %}
+                    <h4 style="color: var(--text-secondary); font-size: 0.9rem; margin: 1rem 0 0.75rem;">Inquiries</h4>
+                    {% for conv in conversations[:5] %}
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <div class="activity-title">
+                                <i class="fas fa-envelope"></i>
+                                Inquiry from {{ conv.client_email }}
+                            </div>
+                            <div class="activity-meta">
+                                {{ conv.conversation_stage|replace('_', ' ')|title }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if (not appointments or appointments|length == 0) and (not conversations or conversations|length == 0) %}
+                    <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">
+                        No activity yet
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- partials/property_details.html - ADD THESE UPDATES -->
+
+<!-- 1. UPDATE STATUS BADGE STYLES (add to <style> section) -->
+<style>
+    .status-badge.sold {
+        background: rgba(46, 204, 113, 0.2);
+        color: #27ae60;
+    }
+</style>
+
+<!-- 2. UPDATE THE FOOTER SECTION - REPLACE with this: -->
+<div class="property-footer">
+    <div style="display: flex; gap: 1rem;">
+        {% if property.availability_status != 'sold' %}
+            <button type="button" 
+                    class="btn btn-success"
+                    hx-post="/app/dashboard/properties/{{ property.id }}/mark-sold?user_id={{ user_id }}"
+                    hx-vals='{"user_id": "{{ user_id }}"}'
+                    hx-confirm="Mark this property as SOLD? This will update the status to closed sale."
+                    hx-target=".property-details-modal"
+                    hx-swap="outerHTML">
+                <i class="fas fa-handshake"></i>
+                Mark as Sold
+            </button>
+        {% endif %}
+        
+        <button type="button" 
+                class="btn btn-danger"
+                hx-post="/app/dashboard/properties/{{ property.id }}/delete"
+                hx-vals='{"user_id": "{{ user_id }}"}'
+                hx-confirm="Are you sure you want to delete this property? This cannot be undone."
+                hx-target=".property-details-modal"
+                hx-swap="outerHTML">
+            <i class="fas fa-trash"></i>
+            Delete Property
+        </button>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; margin-left: auto;">
+        <button type="button" 
+                class="btn btn-secondary" 
+                onclick="this.closest('.property-details-modal').remove()">
+            Close
+        </button>
+        {% if property.availability_status != 'sold' %}
+            <button type="button"
+                    class="btn btn-primary"
+                    hx-get="/app/dashboard/properties/{{ property.id }}/edit?user_id={{ user_id }}"
+                    hx-target=".property-details-modal"
+                    hx-swap="outerHTML">
+                <i class="fas fa-edit"></i>
+                Edit Property
+            </button>
+        {% else %}
+            <div style="padding: 0.75rem 1.5rem; background: rgba(46, 204, 113, 0.2); color: #27ae60; border-radius: 8px; font-weight: 600;">
+                <i class="fas fa-check-circle"></i> Property Sold
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 3. ADD BUTTON STYLE FOR SUCCESS BUTTON (add to <style> section) -->
+<style>
+    .btn-success {
+        background: rgba(46, 204, 113, 0.2);
+        color: #27ae60;
+        border: 1px solid #27ae60;
+    }
+
+    .btn-success:hover {
+        background: rgba(46, 204, 113, 0.3);
+    }
+</style>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelector('.property-details-modal')?.remove();
+        }
+    });
+</script>

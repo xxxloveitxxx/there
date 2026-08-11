@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ReplyzeAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+    <style>
+        :root {
+            --primary-bg: #0a192f;
+            --secondary-bg: #112240;
+            --accent-color: #64ffda;
+            --text-primary: #ffffff;
+            --text-secondary: #8892b0;
+            --card-bg: rgba(16, 36, 64, 0.6);
+            --border-color: rgba(100, 255, 218, 0.2);
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(-45deg, var(--primary-bg), var(--secondary-bg), #1a2f4b, #233554);
+            background-size: 400% 400%;
+            animation: gradientBG 25s ease infinite;
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        @keyframes gradientBG {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Layout */
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+        /* Sidebar */
+        .sidebar {
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(20px);
+            padding: var(--spacing-lg) var(--spacing-md);
+            border-right: 1px solid var(--border-color);
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-color), #8affdf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--accent-color);
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-section {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .nav-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            padding-left: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item {
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(100, 255, 218, 0.1);
+            color: var(--accent-color);
+            transform: translateX(3px);
+        }
+
+        .nav-item.active {
+            background: rgba(100, 255, 218, 0.15);
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--accent-color);
+            color: var(--primary-bg);
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        /* Main Content Area */
+        .main-content {
+    flex: 1;
+    padding: var(--spacing-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: var(--spacing-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-bolt"></i>
+                <span>ReplyzeAI</span>
+            </div>
+
+            <nav class="nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a href="#" 
+                       class="nav-item active"
+                       hx-get="/app/dashboard/home?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/appointments?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Appointments</span>
+                    </a>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/properties?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-building"></i>
+                        <span>Properties</span>
+                    </a>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/conversations?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-comments"></i>
+                        <span>Conversations</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Leads</div>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/leads_funnel?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-users"></i>
+                        <span>Leads Funnel</span>
+                    </a>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/import_leads?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-file-import"></i>
+                        <span>Import Leads</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Email</div>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/responded_emails?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Sent Emails</span>
+                    </a>
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/drafts?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Drafts</span>
+                    </a>
+                </div>
+
+                <div class="nav-section" style="margin-top: auto;">
+                    <a href="#" 
+                       class="nav-item"
+                       hx-get="/app/dashboard/settings?user_id={{ user_id }}"
+                       hx-target=".main-content"
+                       hx-swap="innerHTML">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a href="/app/signout" class="nav-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content - Loaded via HTMX -->
+        <main class="main-content"
+              hx-get="/app/dashboard/home?user_id={{ user_id }}"
+              hx-trigger="load"
+              hx-swap="innerHTML">
+            <!-- Content loads here -->
+            <div style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                <p>Loading dashboard...</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Smooth transitions
+        document.body.addEventListener('htmx:beforeSwap', function(evt) {
+            evt.detail.target.style.opacity = '0.6';
+        });
+        
+        document.body.addEventListener('htmx:afterSwap', function(evt) {
+            evt.detail.target.style.opacity = '1';
+            
+            // Update active nav state
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            if (evt.detail.requestConfig && evt.detail.requestConfig.elt) {
+                evt.detail.requestConfig.elt.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

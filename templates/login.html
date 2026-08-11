@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .signup-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .signup-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: 0.5rem;
+        }
+        
+        .forgot-password a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Welcome Back</h1>
+        <div id="success-message" class="success-message"></div>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="forgot-password">
+                <a href="#" id="reset-password">Forgot password?</a>
+            </div>
+            <button type="submit">Log In</button>
+            <div id="error-message" class="error-message"></div>
+            <div class="signup-link">
+                Don't have an account? <a href="signup.html">Sign up</a>
+            </div>
+        </form>
+    </div>
+
+
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const supabaseUrl = 'https://skxzfkudduqrubtgtodp.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNreHpma3VkZHVxcnVidGd0b2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU1ODAwNzMsImV4cCI6MjA2MTE1NjA3M30.Wj3V5-swysAz8xAbA4lKmo-NNu_mv1UW_X4BgFNq0ag';
+    const sb = supabase.createClient(supabaseUrl, supabaseKey);
+
+    const loginForm        = document.getElementById('login-form');
+    const errorMessage     = document.getElementById('error-message');
+    const successMessage   = document.getElementById('success-message');
+    const resetPasswordLink = document.getElementById('reset-password');
+
+    // Show “email confirmed” if ?confirmed=true is in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('confirmed')) {
+      successMessage.textContent = 'Email confirmed successfully! You can now log in.';
+    }
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMessage.textContent = '';
+
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        // 1) Sign in
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        // 2) Pull out the real user ID
+        const userId = data.user.id;
+
+        // 3) Navigate to your /signin endpoint with the real ID
+        window.location.href = '/signin?user_id=' + userId;
+      } catch (err) {
+        // If their email isn’t confirmed yet:
+        if (err.message.includes('Email not confirmed')) {
+          errorMessage.innerHTML = `
+            Email not verified. 
+            <a href="#" id="resend-confirmation">Resend confirmation email</a>
+          `;
+          document.getElementById('resend-confirmation')
+            .addEventListener('click', async (e2) => {
+              e2.preventDefault();
+              const { error: resendErr } = await sb.auth.resend({
+                type: 'signup',
+                email
+              });
+              alert(resendErr 
+                ? 'Error: ' + resendErr.message 
+                : 'Confirmation email resent! Check your inbox.'
+              );
+            });
+        } else {
+          // Any other error:
+          errorMessage.textContent = err.message;
+        }
+      }
+    });
+
+    // “Forgot password?” flow
+    resetPasswordLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const emailPrompt = prompt("Enter your email for password reset:");
+      if (!emailPrompt) return;
+      try {
+        const { error } = await sb.auth.resetPasswordForEmail(emailPrompt, {
+          redirectTo: window.location.origin + '/update-password.html'
+        });
+        if (error) throw error;
+        alert("Password reset link sent!");
+      } catch (pwdErr) {
+        alert("Error: " + pwdErr.message);
+      }
+    });
+  });
+</script>
+
+
+</body>
+</html>

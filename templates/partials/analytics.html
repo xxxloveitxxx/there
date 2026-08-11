@@ -1,0 +1,171 @@
+{# templates/partials/analytics.html #}
+<div class="section analytics-section">
+  <h1><span>CRE</span> Performance Analytics</h1>
+
+  <!-- Key Metrics -->
+  <div class="analytics-grid">
+    <div class="metric-card">
+      <i class="fas fa-handshake metric-icon"></i>
+      <h3>Deals Closed</h3>
+      <div class="metric-value" id="deals-closed">12</div>
+      <div class="trend up">
+        <i class="fas fa-arrow-up"></i>
+        <span>3 more than last month</span>
+      </div>
+    </div>
+    
+    <div class="metric-card">
+      <i class="fas fa-dollar-sign metric-icon"></i>
+      <h3>Commission Volume</h3>
+      <div class="metric-value" id="commission-volume">$287K</div>
+      <div class="trend up">
+        <i class="fas fa-arrow-up"></i>
+        <span>18% increase</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <i class="fas fa-envelope metric-icon"></i>
+      <h3>AI Responses</h3>
+      <div class="metric-value" id="ai-responses">1,247</div>
+      <div class="trend up">
+        <i class="fas fa-arrow-up"></i>
+        <span>92% success rate</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <i class="fas fa-clock metric-icon"></i>
+      <h3>Time Saved</h3>
+      <div class="metric-value" id="time-saved">42h</div>
+      <div class="trend up">
+        <i class="fas fa-arrow-up"></i>
+        <span>6.5h daily average</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deal Pipeline Chart -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">Deal Pipeline Velocity</div>
+      <div class="chart-actions">
+        <div class="time-filter active">7D</div>
+        <div class="time-filter">30D</div>
+        <div class="time-filter">90D</div>
+      </div>
+    </div>
+    <canvas id="pipelineChart"></canvas>
+  </div>
+
+  <!-- Property Type Breakdown -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">Property Type Performance</div>
+    </div>
+    <div class="property-grid">
+      <div class="property-type">
+        <h4>Office</h4>
+        <div class="property-stats">
+          <div class="property-value">$145K</div>
+          <div class="property-change change-up">+12%</div>
+        </div>
+      </div>
+      <div class="property-type">
+        <h4>Industrial</h4>
+        <div class="property-stats">
+          <div class="property-value">$89K</div>
+          <div class="property-change change-up">+24%</div>
+        </div>
+      </div>
+      <div class="property-type">
+        <h4>Retail</h4>
+        <div class="property-stats">
+          <div class="property-value">$53K</div>
+          <div class="property-change change-down">-8%</div>
+        </div>
+      </div>
+      <div class="property-type">
+        <h4>Multifamily</h4>
+        <div class="property-stats">
+          <div class="property-value">$0</div>
+          <div class="property-change">N/A</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Response Effectiveness -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">AI Response Effectiveness</div>
+      <div class="chart-actions">
+        <div class="time-filter active">Lease</div>
+        <div class="time-filter">LOI</div>
+        <div class="time-filter">RFP</div>
+      </div>
+    </div>
+    <canvas id="responseChart"></canvas>
+  </div>
+
+  <!-- Recent Transactions -->
+  <h2>Recent Transactions</h2>
+  <table class="transaction-table">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Tenant</th>
+        <th>Type</th>
+        <th>Size (sqft)</th>
+        <th>Deal Size</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>450 Park Ave</td>
+        <td>Goldman Sachs</td>
+        <td>Office</td>
+        <td>25,000</td>
+        <td class="deal-size">$1.2M</td>
+        <td><span class="deal-status status-closed">Closed</span></td>
+      </tr>
+      <tr>
+        <td>Brooklyn Navy Yard</td>
+        <td>Amazon Logistics</td>
+        <td>Industrial</td>
+        <td>85,000</td>
+        <td class="deal-size">$650K</td>
+        <td><span class="deal-status status-pending">Pending</span></td>
+      </tr>
+      <tr>
+        <td>5th & Broadway</td>
+        <td>Nike</td>
+        <td>Retail</td>
+        <td>12,500</td>
+        <td class="deal-size">$320K</td>
+        <td><span class="deal-status status-closed">Closed</span></td>
+      </tr>
+      <tr>
+        <td>Hudson Yards</td>
+        <td>Meta</td>
+        <td>Office</td>
+        <td>45,000</td>
+        <td class="deal-size">$2.1M</td>
+        <td><span class="deal-status status-lost">Lost</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Animate metrics on swap
+  animateValue('deals-closed', 0, 12, 800);
+  animateValue('commission-volume', 0, 287, 800, '$', 'K');
+  animateValue('ai-responses', 0, 1247, 800);
+  animateValue('time-saved', 0, 42, 800, '', 'h');
+
+  // Chart.js initializers (assumes Chart.js <script> is loaded in parent template)
+  initPipelineChart();
+  initResponseChart();
+</script>

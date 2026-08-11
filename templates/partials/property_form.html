@@ -1,0 +1,322 @@
+<!-- partials/property_form.html -->
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: slideUp 0.3s;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h2 {
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-header h2 i {
+        color: var(--accent-color);
+    }
+
+    .close-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+        background: rgba(100, 255, 218, 0.1);
+        color: var(--accent-color);
+        border-color: var(--accent-color);
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .form-label .required {
+        color: #f85149;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .modal-footer {
+        padding: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: var(--accent-color);
+        color: var(--primary-bg);
+    }
+
+    .btn-primary:hover {
+        background: #52d1b8;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="modal-overlay" onclick="if(event.target === this) this.remove()">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>
+                <i class="fas fa-building"></i>
+                {% if mode == 'add' %}Add New Property{% else %}Edit Property{% endif %}
+            </h2>
+            <button class="close-btn" onclick="this.closest('.modal-overlay').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form method="POST" 
+              action="/app/dashboard/properties/{% if mode == 'edit' %}{{ property.id }}/edit{% else %}add{% endif %}?user_id={{ user_id }}"
+              hx-post="/app/dashboard/properties/{% if mode == 'edit' %}{{ property.id }}/edit{% else %}add{% endif %}?user_id={{ user_id }}"
+              hx-target=".modal-overlay"
+              hx-swap="outerHTML">
+            
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+
+            <div class="modal-body">
+                <!-- Address -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Property Address <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           name="address" 
+                           class="form-input"
+                           value="{% if property %}{{ property.address }}{% endif %}"
+                           placeholder="123 Main Street, City, State, ZIP"
+                           required>
+                </div>
+
+                <!-- Property Type -->
+                <div class="form-group">
+                    <label class="form-label">Property Type</label>
+                    <select name="property_type" class="form-select">
+                        <option value="apartment" {% if property and property.property_type == 'apartment' %}selected{% endif %}>Apartment</option>
+                        <option value="house" {% if property and property.property_type == 'house' %}selected{% endif %}>House</option>
+                        <option value="condo" {% if property and property.property_type == 'condo' %}selected{% endif %}>Condo</option>
+                        <option value="townhouse" {% if property and property.property_type == 'townhouse' %}selected{% endif %}>Townhouse</option>
+                        <option value="commercial" {% if property and property.property_type == 'commercial' %}selected{% endif %}>Commercial</option>
+                    </select>
+                </div>
+
+                <!-- Bedrooms & Bathrooms -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Bedrooms</label>
+                        <input type="number" 
+                               name="bedrooms" 
+                               class="form-input"
+                               value="{% if property %}{{ property.bedrooms }}{% endif %}"
+                               min="0"
+                               placeholder="3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bathrooms</label>
+                        <input type="number" 
+                               name="bathrooms" 
+                               class="form-input"
+                               value="{% if property %}{{ property.bathrooms }}{% endif %}"
+                               step="0.5"
+                               min="0"
+                               placeholder="2">
+                    </div>
+                </div>
+
+                <!-- Square Feet & Price -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Square Feet</label>
+                        <input type="number" 
+                               name="square_feet" 
+                               class="form-input"
+                               value="{% if property %}{{ property.square_feet }}{% endif %}"
+                               min="0"
+                               placeholder="1500">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Price ($/month)</label>
+                        <input type="number" 
+                               name="price" 
+                               class="form-input"
+                               value="{% if property %}{{ property.price }}{% endif %}"
+                               min="0"
+                               step="0.01"
+                               placeholder="2500">
+                    </div>
+                </div>
+
+<!-- partials/property_form.html - ADD SOLD STATUS OPTION -->
+
+<!-- Find the Availability Status section and REPLACE with this: -->
+
+{% if mode == 'edit' %}
+<div class="form-group">
+    <label class="form-label">Availability Status</label>
+    <select name="availability_status" class="form-select">
+        <option value="available" {% if property.availability_status == 'available' %}selected{% endif %}>Available</option>
+        <option value="pending" {% if property.availability_status == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="rented" {% if property.availability_status == 'rented' %}selected{% endif %}>Rented</option>
+        <option value="sold" {% if property.availability_status == 'sold' %}selected{% endif %}>Sold / Closed</option>
+    </select>
+</div>
+{% endif %}
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" 
+                              class="form-textarea"
+                              placeholder="Beautiful property in a great location...">{% if property %}{{ property.description }}{% endif %}</textarea>
+                </div>
+
+                <!-- Amenities -->
+                <div class="form-group">
+                    <label class="form-label">Amenities</label>
+                    <input type="text" 
+                           name="amenities" 
+                           class="form-input"
+                           value="{% if property %}{{ property.amenities }}{% endif %}"
+                           placeholder="Parking, Pool, Gym, Pet-friendly">
+                    <small style="color: var(--text-secondary); font-size: 0.85rem;">Separate with commas</small>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    {% if mode == 'add' %}Add Property{% else %}Save Changes{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Close on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelector('.modal-overlay')?.remove();
+        }
+    });
+</script>

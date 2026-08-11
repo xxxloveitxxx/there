@@ -1,0 +1,198 @@
+<!-- partials/appointment_form.html -->
+<style>
+    .appointment-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s;
+    }
+
+    .appointment-form-content {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="appointment-modal" onclick="if(event.target === this) this.remove()">
+    <div class="appointment-form-content">
+        <div class="modal-header">
+            <h2>
+                <i class="fas fa-calendar-plus"></i>
+                Schedule Appointment
+            </h2>
+            <button class="close-btn" onclick="this.closest('.appointment-modal').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form method="POST" 
+              action="/app/dashboard/appointments/new?user_id={{ user_id }}"
+              hx-post="/app/dashboard/appointments/new?user_id={{ user_id }}"
+              hx-target=".appointment-modal"
+              hx-swap="outerHTML">
+            
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            {% if conversation %}
+                <input type="hidden" name="conversation_id" value="{{ conversation.id }}">
+            {% endif %}
+
+            <div class="modal-body">
+                <!-- Auto-filled from conversation -->
+                {% if conversation %}
+                    <div style="background: rgba(100, 255, 218, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid var(--accent-color);">
+                        <p style="color: var(--accent-color); font-weight: 600; margin-bottom: 0.5rem;">
+                            <i class="fas fa-info-circle"></i> Booking from conversation
+                        </p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                            Client: {{ conversation.client_email }}<br>
+                            Property: {{ conversation.properties.address if conversation.properties else 'Not specified' }}
+                        </p>
+                    </div>
+                {% endif %}
+
+                <!-- Client Information -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Client Email <span class="required">*</span>
+                    </label>
+                    <input type="email" 
+                           name="client_email" 
+                           class="form-input"
+                           value="{% if conversation %}{{ conversation.client_email }}{% endif %}"
+                           placeholder="client@example.com"
+                           required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Client Name</label>
+                    <input type="text" 
+                           name="client_name" 
+                           class="form-input"
+                           placeholder="John Doe">
+                </div>
+
+                <!-- Property Selection -->
+                <div class="form-group">
+                    <label class="form-label">
+                        Property <span class="required">*</span>
+                    </label>
+                    <select name="property_id" class="form-select" required>
+                        <option value="">Select a property...</option>
+                        {% for prop in properties %}
+                        <option value="{{ prop.id }}" 
+                                {% if conversation and conversation.property_id == prop.id %}selected{% endif %}>
+                            {{ prop.address }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Date & Time -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Date <span class="required">*</span>
+                        </label>
+                        <input type="date" 
+                               name="date" 
+                               class="form-input"
+                               min="{{ today }}"
+                               required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            Time <span class="required">*</span>
+                        </label>
+                        <input type="time" 
+                               name="time" 
+                               class="form-input"
+                               required>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea name="notes" 
+                              class="form-textarea"
+                              placeholder="Any special instructions or notes..."></textarea>
+                </div>
+
+                <!-- Quick Time Suggestions -->
+                <div style="background: rgba(255, 255, 255, 0.03); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 0.75rem;">
+                        <i class="fas fa-clock"></i> Quick time slots:
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button type="button" class="time-suggestion" data-time="09:00">9:00 AM</button>
+                        <button type="button" class="time-suggestion" data-time="10:00">10:00 AM</button>
+                        <button type="button" class="time-suggestion" data-time="14:00">2:00 PM</button>
+                        <button type="button" class="time-suggestion" data-time="15:00">3:00 PM</button>
+                        <button type="button" class="time-suggestion" data-time="16:00">4:00 PM</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="this.closest('.appointment-modal').remove()">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i>
+                    Schedule Appointment
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .time-suggestion {
+        padding: 0.5rem 1rem;
+        background: rgba(100, 255, 218, 0.1);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.85rem;
+    }
+
+    .time-suggestion:hover {
+        background: rgba(100, 255, 218, 0.2);
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+</style>
+
+<script>
+    // Set today's date as minimum
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelector('input[name="date"]').setAttribute('min', today);
+    
+    // Quick time slot buttons
+    document.querySelectorAll('.time-suggestion').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelector('input[name="time"]').value = this.dataset.time;
+        });
+    });
+
+    // Close on ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelector('.appointment-modal')?.remove();
+        }
+    });
+</script>

@@ -1,0 +1,305 @@
+<!-- partials/appointment_details.html -->
+<style>
+    .appointment-details-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s;
+    }
+
+    .appointment-details-content {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        max-width: 700px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .appointment-header-banner {
+        background: linear-gradient(135deg, rgba(100, 255, 218, 0.15), rgba(100, 255, 218, 0.05));
+        padding: 2rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .apt-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .apt-date-time {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .apt-date-box {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(100, 255, 218, 0.1);
+        border-radius: 10px;
+        min-width: 80px;
+    }
+
+    .apt-day {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        line-height: 1;
+    }
+
+    .apt-month {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+    }
+
+    .apt-time-info {
+        flex: 1;
+    }
+
+    .apt-time-large {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .apt-duration {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .apt-status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .apt-status-badge.scheduled {
+        background: rgba(100, 255, 218, 0.2);
+        color: var(--accent-color);
+    }
+
+    .apt-status-badge.completed {
+        background: rgba(136, 146, 176, 0.2);
+        color: var(--text-secondary);
+    }
+
+    .apt-status-badge.cancelled {
+        background: rgba(248, 81, 73, 0.2);
+        color: #f85149;
+    }
+
+    .apt-info-grid {
+        display: grid;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .info-section {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .info-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .info-label i {
+        color: var(--accent-color);
+    }
+
+    .info-value {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    .info-value a {
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+
+    .info-value a:hover {
+        text-decoration: underline;
+    }
+
+    .notes-section {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .notes-content {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<div class="appointment-details-modal" onclick="if(event.target === this) this.remove()">
+    <div class="appointment-details-content">
+        <!-- Header Banner -->
+        <div class="appointment-header-banner">
+            <div class="apt-header-top">
+                <div class="apt-date-time">
+                    <div class="apt-date-box">
+                        <div class="apt-day">{{ appointment.appointment_time[8:10] }}</div>
+                        <div class="apt-month">{{ appointment.appointment_time[5:7] }}/{{ appointment.appointment_time[2:4] }}</div>
+                    </div>
+                    <div class="apt-time-info">
+                        <div class="apt-time-large">
+                            {{ appointment.appointment_time[11:16] }}
+                        </div>
+                        <div class="apt-duration">
+                            <i class="fas fa-clock"></i>
+                            {{ appointment.duration_minutes or 30 }} minutes
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                    <span class="apt-status-badge {{ appointment.status }}">
+                        {{ appointment.status }}
+                    </span>
+                    <button class="close-btn" onclick="this.closest('.appointment-details-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointment Info -->
+        <div class="apt-info-grid">
+            <!-- Client Info -->
+            <div class="info-section">
+                <div class="info-label">
+                    <i class="fas fa-user"></i>
+                    Client
+                </div>
+                <div class="info-value">
+                    {{ appointment.client_name or appointment.client_email }}
+                </div>
+                {% if appointment.client_name %}
+                <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
+                    <a href="mailto:{{ appointment.client_email }}">{{ appointment.client_email }}</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Property Info -->
+            <div class="info-section">
+                <div class="info-label">
+                    <i class="fas fa-building"></i>
+                    Property
+                </div>
+                <div class="info-value">
+                    {% if appointment.properties %}
+                        {{ appointment.properties.address }}
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notes -->
+            {% if appointment.notes %}
+            <div class="notes-section">
+                <div class="info-label">
+                    <i class="fas fa-sticky-note"></i>
+                    Notes
+                </div>
+                <div class="notes-content">
+                    {{ appointment.notes }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Conversation Link -->
+            {% if appointment.conversations %}
+            <div class="info-section">
+                <div class="info-label">
+                    <i class="fas fa-comments"></i>
+                    Related Conversation
+                </div>
+                <div class="info-value">
+                    <a href="#" 
+                       hx-get="/app/dashboard/conversations/{{ appointment.conversations.id }}?user_id={{ user_id }}"
+                       hx-target="body"
+                       hx-swap="beforeend">
+                        View conversation thread
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="modal-footer">
+            {% if appointment.status == 'scheduled' %}
+                <button type="button" 
+                        class="btn btn-danger"
+                        hx-post="/app/dashboard/appointments/{{ appointment.id }}/cancel"
+                        hx-vals='{"user_id": "{{ user_id }}"}'
+                        hx-confirm="Are you sure you want to cancel this appointment?"
+                        hx-target=".appointment-details-modal"
+                        hx-swap="outerHTML">
+                    <i class="fas fa-times-circle"></i>
+                    Cancel Appointment
+                </button>
+                <div style="display: flex; gap: 1rem; margin-left: auto;">
+                    <button type="button" 
+                            class="btn btn-secondary" 
+                            onclick="this.closest('.appointment-details-modal').remove()">
+                        Close
+                    </button>
+                    <button type="button"
+                            class="btn btn-primary"
+                            hx-post="/app/dashboard/appointments/{{ appointment.id }}/complete"
+                            hx-vals='{"user_id": "{{ user_id }}"}'
+                            hx-confirm="Mark this appointment as completed?"
+                            hx-target=".appointment-details-modal"
+                            hx-swap="outerHTML">
+                        <i class="fas fa-check-circle"></i>
+                        Mark as Complete
+                    </button>
+                </div>
+            {% else %}
+                <button type="button" 
+                        class="btn btn-secondary" 
+                        style="margin-left: auto;"
+                        onclick="this.closest('.appointment-details-modal').remove()">
+                    Close
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelector('.appointment-details-modal')?.remove();
+        }
+    });
+</script>

@@ -1,0 +1,419 @@
+<!-- partials/conversations_page.html -->
+<style>
+    .conversations-page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .page-title i {
+        color: var(--accent-color);
+    }
+
+    .header-stats {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .stat-pill {
+        padding: 0.75rem 1.25rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .stat-pill i {
+        color: var(--accent-color);
+    }
+
+    /* Stage Filters */
+    .stage-filters {
+        display: flex;
+        gap: 1rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+    }
+
+    .stage-filter {
+        padding: 1rem 1.5rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 140px;
+    }
+
+    .stage-filter:hover {
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+    }
+
+    .stage-filter.active {
+        background: rgba(100, 255, 218, 0.15);
+        border-color: var(--accent-color);
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    .stage-filter.active .filter-label {
+        color: var(--accent-color);
+    }
+
+    .filter-count {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    /* Conversations */
+    .conversations-container {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .conversation-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s;
+    }
+
+    .conversation-card:hover {
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .conversation-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .client-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent-color), #52d1b8);
+        color: var(--primary-bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .client-info {
+        flex: 1;
+    }
+
+    .client-info h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .property-ref {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .property-ref i {
+        color: var(--accent-color);
+    }
+
+    .stage-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .stage-badge.initial_inquiry {
+        background: rgba(100, 255, 218, 0.2);
+        color: var(--accent-color);
+    }
+
+    .stage-badge.awaiting_availability {
+        background: rgba(248, 150, 30, 0.2);
+        color: #f8961e;
+    }
+
+    .stage-badge.appointment_booked {
+        background: rgba(86, 124, 228, 0.2);
+        color: #567ce4;
+    }
+
+    .stage-badge.completed {
+        background: rgba(136, 146, 176, 0.2);
+        color: var(--text-secondary);
+    }
+
+    .conversation-meta {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .meta-item i {
+        color: var(--accent-color);
+    }
+
+    .last-message {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .message-label {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .message-preview {
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+
+    .conversation-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-success {
+        background: rgba(100, 255, 218, 0.2);
+        color: var(--accent-color);
+        border: 1px solid var(--accent-color);
+    }
+
+    .btn-success:hover {
+        background: rgba(100, 255, 218, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .stage-filters {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+        .conversation-header {
+            flex-direction: column;
+        }
+
+        .conversation-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .conversation-actions {
+            flex-direction: column;
+        }
+
+        .conversation-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="conversations-page-header">
+    <h1 class="page-title">
+        <i class="fas fa-comments"></i>
+        Active Conversations
+    </h1>
+    <div class="header-stats">
+        <div class="stat-pill">
+            <i class="fas fa-envelope"></i>
+            <span>{{ total_conversations }} conversations</span>
+        </div>
+        <div class="stat-pill">
+            <i class="fas fa-clock"></i>
+            <span>{{ awaiting_response }} awaiting response</span>
+        </div>
+    </div>
+</div>
+
+<!-- Stage Filters -->
+<div class="stage-filters">
+    <button class="stage-filter active" data-stage="all">
+        <span class="filter-label">All</span>
+        <span class="filter-count">{{ total_conversations }}</span>
+    </button>
+    <button class="stage-filter" data-stage="initial_inquiry">
+        <span class="filter-label">New Inquiries</span>
+        <span class="filter-count">{{ stage_counts.initial_inquiry }}</span>
+    </button>
+    <button class="stage-filter" data-stage="awaiting_availability">
+        <span class="filter-label">Scheduling</span>
+        <span class="filter-count">{{ stage_counts.awaiting_availability }}</span>
+    </button>
+    <button class="stage-filter" data-stage="appointment_booked">
+        <span class="filter-label">Booked</span>
+        <span class="filter-count">{{ stage_counts.appointment_booked }}</span>
+    </button>
+</div>
+
+<!-- Conversations List -->
+<div class="conversations-container">
+    {% if conversations %}
+        {% for conv in conversations %}
+        <div class="conversation-card" data-stage="{{ conv.conversation_stage }}">
+            <div class="conversation-header">
+                <div class="client-avatar">
+                    {{ conv.client_email[0]|upper }}
+                </div>
+                <div class="client-info">
+                    <h3>{{ conv.client_email }}</h3>
+                    <p class="property-ref">
+                        {% if conv.property_address %}
+                            <i class="fas fa-building"></i>
+                            {{ conv.property_address }}
+                        {% else %}
+                            <i class="fas fa-question-circle"></i>
+                            General inquiry
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="conversation-status">
+                    <span class="stage-badge {{ conv.conversation_stage }}">
+                        {% if conv.conversation_stage == 'initial_inquiry' %}
+                            <i class="fas fa-envelope"></i> New
+                        {% elif conv.conversation_stage == 'awaiting_availability' %}
+                            <i class="fas fa-calendar-alt"></i> Scheduling
+                        {% elif conv.conversation_stage == 'appointment_booked' %}
+                            <i class="fas fa-check-circle"></i> Booked
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="conversation-meta">
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Last updated {{ conv.updated_at_formatted }}</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-comment-alt"></i>
+                    <span>{{ conv.email_count }} messages</span>
+                </div>
+            </div>
+
+            <div class="last-message">
+                <div class="message-label">Last message:</div>
+                <div class="message-preview">
+                    {{ conv.last_message_preview }}
+                </div>
+            </div>
+
+            <div class="conversation-actions">
+                <button class="btn btn-sm btn-secondary"
+                        hx-get="/app/dashboard/conversations/{{ conv.id }}?user_id={{ user_id }}"
+                        hx-target="body"
+                        hx-swap="beforeend">
+                    <i class="fas fa-eye"></i>
+                    View Thread
+                </button>
+                
+                {% if conv.conversation_stage == 'awaiting_availability' %}
+                    <button class="btn btn-sm btn-primary"
+                            hx-get="/app/dashboard/appointments/new?conversation_id={{ conv.id }}&user_id={{ user_id }}"
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <i class="fas fa-calendar-plus"></i>
+                        Book Now
+                    </button>
+                {% elif conv.conversation_stage == 'appointment_booked' %}
+                    <button class="btn btn-sm btn-success"
+                            hx-get="/app/dashboard/appointments/{{ conv.appointment_id }}?user_id={{ user_id }}"
+                            hx-target="body"
+                            hx-swap="beforeend">
+                        <i class="fas fa-calendar-check"></i>
+                        View Appointment
+                    </button>
+                {% endif %}
+                
+                <button class="btn btn-sm btn-secondary"
+                        hx-post="/app/dashboard/conversations/{{ conv.id }}/complete?user_id={{ user_id }}"
+                        hx-confirm="Mark this conversation as complete?"
+                        hx-target=".main-content"
+                        hx-swap="outerHTML">
+                    <i class="fas fa-check"></i>
+                    Complete
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+            <i class="fas fa-comments" style="font-size: 5rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+            <h3>No Active Conversations</h3>
+            <p>When clients inquire about your properties, their conversations will appear here</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // Stage filtering
+    document.querySelectorAll('.stage-filter').forEach(filter => {
+        filter.addEventListener('click', function() {
+            document.querySelectorAll('.stage-filter').forEach(f => f.classList.remove('active'));
+            this.classList.add('active');
+            
+            const stage = this.dataset.stage;
+            
+            // Show/hide conversations based on stage
+            document.querySelectorAll('.conversation-card').forEach(card => {
+                if (stage === 'all' || card.dataset.stage === stage) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,175 @@
+<div class="chart-container" style="max-width: 800px; margin: 20px auto;">
+  <div class="chart-header">
+    <div class="chart-title">Lead Details: {{ lead.first_name }} {{ lead.last_name }}</div>
+    <button class="btn btn-sm btn-secondary" onclick="this.closest('.chart-container').remove()">
+      <i class="fas fa-times"></i> Close
+    </button>
+  </div>
+  
+  <div class="lead-details">
+    <div class="detail-row">
+      <strong>Email:</strong> {{ lead.email }}
+    </div>
+    <div class="detail-row">
+      <strong>Brokerage:</strong> {{ lead.brokerage }}
+    </div>
+    <div class="detail-row">
+      <strong>Service:</strong> {{ lead.service }}
+    </div>
+    <div class="detail-row">
+      <strong>City:</strong> {{ lead.city }}
+    </div>
+    <div class="detail-row">
+      <strong>Status:</strong> 
+      <span class="lead-status status-{{ lead.status or 'new' }}">
+        {{ (lead.status or 'new')|title }}
+      </span>
+    </div>
+    <div class="detail-row">
+      <strong>Imported:</strong> {{ lead.email_sent|format_date }}
+    </div>
+    
+    <div class="detail-actions">
+      <form hx-post="/app/dashboard/leads/{{ lead.id }}/update-status?user_id={{ user_id }}" hx-trigger="change" hx-target="this" hx-swap="outerHTML">
+        <label for="status">Update Status:</label>
+        <select name="status" id="status">
+          <option value="new" {% if lead.status == 'new' %}selected{% endif %}>New</option>
+          <option value="contacted" {% if lead.status == 'contacted' %}selected{% endif %}>Contacted</option>
+          <option value="proposal" {% if lead.status == 'proposal' %}selected{% endif %}>Proposal Sent</option>
+          <option value="closed" {% if lead.status == 'closed' %}selected{% endif %}>Closed</option>
+        </select>
+      </form>
+    </div>
+  </div>
+  
+  <div class="follow-up-history">
+    <h3>Follow-up History</h3>
+    {% if follow_ups %}
+      <div class="timeline">
+        {% for follow_up in follow_ups %}
+        <div class="timeline-item">
+          <div class="timeline-date">{{ follow_up.scheduled_at|format_date }}</div>
+          <div class="timeline-content">
+            <strong>{{ follow_up.sequence_step }}: {{ follow_up.status|title }}</strong>
+            {% if follow_up.generated_content %}
+              <p>{{ follow_up.generated_content|truncate(100) }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No follow-ups scheduled yet.</p>
+    {% endif %}
+  </div>
+  
+  <div class="notes-section">
+    <h3>Notes</h3>
+    <form hx-post="/app/dashboard/leads/{{ lead.id }}/add-note?user_id={{ user_id }}" hx-target="#notes-list" hx-swap="beforeend">
+      <textarea name="note" placeholder="Add a note about this lead..." rows="3"></textarea>
+      <button type="submit" class="btn btn-primary">Add Note</button>
+    </form>
+    <div id="notes-list">
+      <!-- Notes will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<style>
+  .lead-details {
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .detail-row {
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+  
+  .detail-row strong {
+    min-width: 80px;
+  }
+  
+  .detail-actions {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(100, 255, 218, 0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .detail-actions select {
+    background: rgba(16, 36, 64, 0.8);
+    color: white;
+    border: 1px solid rgba(100, 255, 218, 0.3);
+    padding: var(--spacing-sm);
+    border-radius: 4px;
+    margin-left: var(--spacing-sm);
+  }
+  
+  .follow-up-history, .notes-section {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(100, 255, 218, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .timeline {
+    margin-top: var(--spacing-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+  
+  .timeline-item {
+    display: flex;
+    margin-bottom: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+  
+  .timeline-date {
+    min-width: 120px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+  
+  .timeline-content {
+    flex: 1;
+    padding: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  
+  .notes-section textarea {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.2);
+    border-radius: 6px;
+    color: white;
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  @media (max-width: 768px) {
+    .timeline-item {
+      flex-direction: column;
+    }
+    
+    .timeline-date {
+      min-width: auto;
+    }
+  }
+</style>

@@ -1,0 +1,409 @@
+<!-- partials/appointments_page.html -->
+<style>
+    .appointments-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .page-title i {
+        color: var(--accent-color);
+    }
+
+    .view-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2rem 0;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .view-tabs {
+        display: flex;
+        gap: 0.5rem;
+        background: var(--card-bg);
+        padding: 0.5rem;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .view-tab {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .view-tab:hover {
+        color: var(--accent-color);
+    }
+
+    .view-tab.active {
+        background: var(--accent-color);
+        color: var(--primary-bg);
+    }
+
+    .time-filter {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .filter-btn {
+        padding: 0.75rem 1.25rem;
+        border: 1px solid var(--border-color);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+
+    .filter-btn.active {
+        background: rgba(100, 255, 218, 0.15);
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
+
+    /* Calendar View */
+    .calendar-container {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+    }
+
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .calendar-day {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 1rem;
+        min-height: 180px;
+    }
+
+    .calendar-day.today {
+        border-color: var(--accent-color);
+        background: rgba(100, 255, 218, 0.05);
+    }
+
+    .day-header {
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .day-name {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .day-date {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .day-appointments {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .calendar-appointment {
+        background: rgba(100, 255, 218, 0.1);
+        border: 1px solid var(--accent-color);
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .calendar-appointment:hover {
+        background: rgba(100, 255, 218, 0.15);
+        transform: scale(1.02);
+    }
+
+    .apt-time-badge {
+        font-weight: 700;
+        color: var(--accent-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .apt-client-name {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .apt-property-name {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+    }
+
+    /* List View */
+    .list-container {
+        display: none;
+    }
+
+    .list-container.active {
+        display: block;
+    }
+
+    .appointment-list-item {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        display: grid;
+        grid-template-columns: 120px 1fr 1fr auto auto;
+        gap: 1.5rem;
+        align-items: center;
+        transition: all 0.3s;
+    }
+
+    .appointment-list-item:hover {
+        border-color: var(--accent-color);
+        transform: translateX(4px);
+    }
+
+    .apt-datetime {
+        text-align: center;
+    }
+
+    .apt-datetime .date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .apt-datetime .time {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+
+    .apt-client-info h4 {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .apt-client-info p {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .apt-property-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+    }
+
+    .apt-property-info i {
+        color: var(--accent-color);
+    }
+
+    .apt-status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .apt-status-badge.scheduled {
+        background: rgba(100, 255, 218, 0.2);
+        color: var(--accent-color);
+    }
+
+    .apt-status-badge.completed {
+        background: rgba(136, 146, 176, 0.2);
+        color: var(--text-secondary);
+    }
+
+    .apt-status-badge.cancelled {
+        background: rgba(248, 81, 73, 0.2);
+        color: #f85149;
+    }
+
+    @media (max-width: 1200px) {
+        .calendar-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .calendar-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .appointment-list-item {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="appointments-page-header">
+    <h1 class="page-title">
+        <i class="fas fa-calendar-check"></i>
+        Appointments
+    </h1>
+    <button class="btn btn-primary"
+            hx-get="/app/dashboard/appointments/new?user_id={{ user_id }}"
+            hx-target="body"
+            hx-swap="beforeend">
+        <i class="fas fa-plus"></i>
+        Schedule New
+    </button>
+</div>
+
+<!-- View Controls -->
+<div class="view-controls">
+    <div class="view-tabs">
+        <button class="view-tab active" data-view="calendar">
+            <i class="fas fa-calendar-alt"></i>
+            Calendar
+        </button>
+        <button class="view-tab" data-view="list">
+            <i class="fas fa-list"></i>
+            List
+        </button>
+    </div>
+    <div class="time-filter">
+        <button class="filter-btn active" data-period="today">Today</button>
+        <button class="filter-btn" data-period="week">This Week</button>
+        <button class="filter-btn" data-period="month">This Month</button>
+    </div>
+</div>
+
+<!-- Calendar View -->
+<div class="calendar-container" id="calendar-view">
+    <div class="calendar-grid">
+        {% for day in week_days %}
+        <div class="calendar-day {{ 'today' if day.is_today else '' }}">
+            <div class="day-header">
+                <div class="day-name">{{ day.name }}</div>
+                <div class="day-date">{{ day.date }}</div>
+            </div>
+            <div class="day-appointments">
+                {% if day.appointments %}
+                    {% for apt in day.appointments %}
+                    <div class="calendar-appointment"
+                         hx-get="/app/dashboard/appointments/{{ apt.id }}?user_id={{ user_id }}"
+                         hx-target="body"
+                         hx-swap="beforeend">
+                        <div class="apt-time-badge">{{ apt.time }}</div>
+                        <div class="apt-client-name">{{ apt.client_email.split('@')[0] }}</div>
+                        <div class="apt-property-name">{{ apt.property_address }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="text-align: center; padding: 1rem; color: var(--text-secondary); font-size: 0.85rem;">
+                        <i class="fas fa-calendar-check" style="opacity: 0.3; display: block; margin-bottom: 0.5rem;"></i>
+                        No appointments
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- List View -->
+<div class="list-container" id="list-view">
+    {% if appointments %}
+        {% for apt in appointments %}
+        <div class="appointment-list-item">
+            <div class="apt-datetime">
+                <div class="date">{{ apt.date }}</div>
+                <div class="time">{{ apt.time }}</div>
+            </div>
+            <div class="apt-client-info">
+                <h4>{{ apt.client_name or apt.client_email }}</h4>
+                <p>{{ apt.client_email if apt.client_name else '' }}</p>
+            </div>
+            <div class="apt-property-info">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ apt.property_address }}</span>
+            </div>
+            <div>
+                <span class="apt-status-badge {{ apt.status }}">{{ apt.status }}</span>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-secondary"
+                        hx-get="/app/dashboard/appointments/{{ apt.id }}?user_id={{ user_id }}"
+                        hx-target="body"
+                        hx-swap="beforeend">
+                    <i class="fas fa-eye"></i>
+                    View
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 4rem; color: var(--text-secondary);">
+            <i class="fas fa-calendar-times" style="font-size: 5rem; opacity: 0.2; margin-bottom: 1rem;"></i>
+            <h3>No Appointments</h3>
+            <p>You don't have any appointments scheduled.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    // View toggle
+    document.querySelectorAll('.view-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const view = this.dataset.view;
+            document.getElementById('calendar-view').style.display = view === 'calendar' ? 'block' : 'none';
+            document.getElementById('list-view').classList.toggle('active', view === 'list');
+        });
+    });
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const period = this.dataset.period;
+            htmx.ajax('GET', `/app/dashboard/appointments?period=${period}&user_id={{ user_id }}`, {
+                target: '.main-content',
+                swap: 'innerHTML'
+            });
+        });
+    });
+</script>

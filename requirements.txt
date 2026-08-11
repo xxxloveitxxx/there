@@ -1,0 +1,35 @@
+Flask==2.3.3
+gunicorn==21.2.0
+requests==2.31.0
+python-dotenv==1.0.1
+blis
+
+# Supabase SDK and dependencies
+supabase==1.0.3
+httpx==0.23.3
+python-dateutil==2.8.2
+
+# Google API dependencies
+google-auth==2.26.1
+google-auth-oauthlib==1.0.0
+google-api-python-client==2.101.0
+
+# Transaction Autopilot dependencies
+docxtpl==0.17.0
+pytesseract==0.3.10
+docx2txt==0.8
+spacy==3.5.0
+pillow==10.0.0
+pdf2image
+
+openpyxl
+
+dnspython
+
+Flask-Cors==3.0.10
+
+redis
+rq
+
+cryptography
+paddle-python-sdk

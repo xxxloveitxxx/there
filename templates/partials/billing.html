@@ -1,0 +1,152 @@
+{# templates/partials/billing.html #}
+<div class="section billing-section">
+  <h1><span>Billing</span> & Payments</h1>
+
+  <!-- Billing Summary -->
+  <div class="analytics-grid">
+    <div class="metric-card">
+      <i class="fas fa-wallet metric-icon"></i>
+      <h3>Current Balance</h3>
+      <div class="metric-value" id="current-balance">$2,450.00</div>
+      <div class="trend">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Payment due in 15 days</span>
+      </div>
+    </div>
+    
+    <div class="metric-card">
+      <i class="fas fa-receipt metric-icon"></i>
+      <h3>Last Payment</h3>
+      <div class="metric-value" id="last-payment">$997.00</div>
+      <div class="trend">
+        <i class="fas fa-check-circle"></i>
+        <span>Paid on May 1, 2023</span>
+      </div>
+    </div>
+
+    <div class="metric-card">
+      <i class="fas fa-calendar-check metric-icon"></i>
+      <h3>Next Billing Date</h3>
+      <div class="metric-value" id="next-billing">Jun 1, 2023</div>
+      <div class="trend">
+        <i class="fas fa-sync-alt"></i>
+        <span>Auto-pay enabled</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Chart -->
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">Commission Revenue</div>
+      <div class="chart-actions">
+        <div class="time-filter active">30D</div>
+        <div class="time-filter">90D</div>
+        <div class="time-filter">YTD</div>
+      </div>
+    </div>
+    <canvas id="revenueChart"></canvas>
+  </div>
+
+  <!-- Recent Invoices -->
+  <h2>Recent Invoices</h2>
+  <div class="invoice-grid">
+    <div class="invoice-card">
+      <div class="invoice-header">
+        <h4>INV-2023-05-001</h4>
+        <div class="invoice-date">Due: May 15, 2023</div>
+      </div>
+      <div class="invoice-amount">$997.00</div>
+      <div class="invoice-status status-pending">Pending Payment</div>
+      <div class="invoice-actions">
+        <button class="btn btn-primary btn-sm">
+          <i class="fas fa-file-invoice-dollar"></i> Pay Now
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </div>
+
+    <div class="invoice-card">
+      <div class="invoice-header">
+        <h4>INV-2023-04-001</h4>
+        <div class="invoice-date">Paid: May 1, 2023</div>
+      </div>
+      <div class="invoice-amount">$997.00</div>
+      <div class="invoice-status status-paid">Paid</div>
+      <div class="invoice-actions">
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-download"></i> Download
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-receipt"></i> Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Methods -->
+  <h2>Payment Methods</h2>
+  <div class="payment-grid">
+    <div class="payment-card">
+      <div class="payment-header">
+        <i class="fab fa-cc-visa payment-icon"></i>
+        <div class="payment-details">
+          <h4>Visa ending in 4242</h4>
+          <div class="payment-meta">Expires 04/2025</div>
+        </div>
+      </div>
+      <div class="payment-actions">
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-trash-alt"></i> Remove
+        </button>
+      </div>
+    </div>
+
+    <div class="payment-card">
+      <div class="payment-header">
+        <i class="fas fa-university payment-icon"></i>
+        <div class="payment-details">
+          <h4>Bank Account</h4>
+          <div class="payment-meta">•••• 6789 (Checking)</div>
+        </div>
+      </div>
+      <div class="payment-actions">
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-secondary btn-sm">
+          <i class="fas fa-trash-alt"></i> Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Payment Method -->
+  <button class="btn btn-primary" style="margin-top: 30px;">
+    <i class="fas fa-plus"></i> Add Payment Method
+  </button>
+</div>
+
+<script>
+  // Animate values on load
+  animateValue('current-balance', 0, 2450, 800, '$');
+  animateValue('last-payment', 0, 997, 800, '$');
+
+  // Initialize revenue chart
+  initRevenueChart();
+
+  // Time filter interactions
+  document.querySelectorAll('.time-filter').forEach(filter => {
+    filter.addEventListener('click', function() {
+      document.querySelectorAll('.time-filter').forEach(f => f.classList.remove('active'));
+      this.classList.add('active');
+      // Update chart data based on selected time period
+      updateRevenueChart(this.textContent);
+    });
+  });
+</script>
